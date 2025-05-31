@@ -31,7 +31,7 @@ abstract class AiClient {
     String? apiKey = config.apiKey;
     
     // If API key is not provided or is a placeholder, try to get from environment
-    if (apiKey == null || apiKey.isEmpty || apiKey.startsWith(r'${')) {
+    if (apiKey.isEmpty || apiKey.startsWith(r'${')) {
       switch (config.aiProvider.toLowerCase()) {
         case 'openai':
           apiKey = Platform.environment['OPENAI_API_KEY'];

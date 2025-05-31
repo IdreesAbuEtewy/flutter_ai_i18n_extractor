@@ -251,7 +251,7 @@ class AbbreviationGenerator {
       'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for',
       'from', 'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on',
       'that', 'the', 'to', 'was', 'will', 'with', 'you', 'your',
-      'this', 'that', 'these', 'those', 'can', 'could', 'should',
+      'this', 'these', 'those', 'can', 'could', 'should',
       'would', 'may', 'might', 'must', 'shall', 'do', 'does', 'did',
     };
     

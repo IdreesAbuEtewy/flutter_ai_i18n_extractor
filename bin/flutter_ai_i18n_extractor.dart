@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:colorize/colorize.dart';
 import 'package:flutter_ai_i18n_extractor/flutter_ai_i18n_extractor.dart';
-import 'package:path/path.dart' as path;
 
 void main(List<String> arguments) async {
   final parser = ArgParser()
@@ -152,8 +151,10 @@ Future<void> _extractCommand(String configPath, bool dryRun, bool verbose, Strin
     }
     
     _printInfo('Analyzing context for ${allExtractedStrings.length} strings...');
-    for (final extractedString in allExtractedStrings) {
-      extractedString.context = await contextAnalyzer.analyzeContext(extractedString);
+    for (int i = 0; i < allExtractedStrings.length; i++) {
+      final extractedString = allExtractedStrings[i];
+      final context = await contextAnalyzer.analyzeContext(extractedString);
+      allExtractedStrings[i] = extractedString.copyWith(context: context);
     }
     
     _printInfo('Generating intelligent keys...');

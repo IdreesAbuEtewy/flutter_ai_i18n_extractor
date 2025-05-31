@@ -34,10 +34,10 @@ class ExtractedString {
   final bool isAlreadyLocalized;
   
   /// The UI context classification
-  StringContext? context;
+  final StringContext? context;
   
   /// Generated localization key
-  String? generatedKey;
+  final String? generatedKey;
 
    ExtractedString({
     required this.value,

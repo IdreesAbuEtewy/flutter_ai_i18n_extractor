@@ -318,12 +318,15 @@ class ContextAnalyzer {
     if (widgetTypes.contains('TextField') || widgetTypes.contains('TextFormField') ||
         parameterNames.contains('hintText') || parameterNames.contains('labelText')) {
       // Mark hint texts and labels appropriately
-      for (final string in strings) {
+      for (int i = 0; i < strings.length; i++) {
+        final string = strings[i];
         if (string.parameterName == 'hintText' && string.context?.type == StringContextType.unknown) {
-          string.context = StringContext(
-            type: StringContextType.hint,
-            screenContext: string.context?.screenContext,
-            confidence: 0.8,
+          strings[i] = string.copyWith(
+            context: StringContext(
+              type: StringContextType.hint,
+              screenContext: string.context?.screenContext,
+              confidence: 0.8,
+            ),
           );
         }
       }
