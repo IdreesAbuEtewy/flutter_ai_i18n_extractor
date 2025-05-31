@@ -56,7 +56,7 @@ flutter pub get
 ### 1. Initialize Configuration
 
 ```bash
-flutter packages pub run flutter_ai_i18n_extractor:main init
+flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor init
 ```
 
 This creates a `flutter_ai_i18n_extractor.yaml` configuration file:
@@ -118,10 +118,10 @@ export ANTHROPIC_API_KEY="your-api-key-here"
 
 ```bash
 # Extract strings and generate translations
-flutter packages pub run flutter_ai_i18n_extractor:main extract
+flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor extract
 
 # Or run in dry-run mode first to see what would be extracted
-flutter packages pub run flutter_ai_i18n_extractor:main extract --dry-run
+flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor extract --dry-run
 ```
 
 ## Usage Examples
@@ -250,13 +250,13 @@ class LoginPage extends StatelessWidget {
 
 ### Initialize
 ```bash
-flutter packages pub run flutter_ai_i18n_extractor:main init
+flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor init
 ```
 Creates a configuration file with sensible defaults.
 
 ### Extract
 ```bash
-flutter packages pub run flutter_ai_i18n_extractor:main extract [options]
+flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor extract [options]
 ```
 
 Options:
@@ -266,19 +266,19 @@ Options:
 
 ### Update
 ```bash
-flutter packages pub run flutter_ai_i18n_extractor:main update
+flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor update
 ```
 Updates existing translations with new strings.
 
 ### Validate
 ```bash
-flutter packages pub run flutter_ai_i18n_extractor:main validate
+flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor validate
 ```
 Validates ARB files and checks for missing translations.
 
 ### Stats
 ```bash
-flutter packages pub run flutter_ai_i18n_extractor:main stats
+flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor stats
 ```
 Shows statistics about your localization coverage.
 
@@ -371,7 +371,7 @@ output-class: AppLocalizations
 
 ### 1. Use Dry Run First
 ```bash
-flutter packages pub run flutter_ai_i18n_extractor:main extract --dry-run
+flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor extract --dry-run
 ```
 
 ### 2. Review Generated Keys
@@ -412,7 +412,7 @@ Error: The getter 'someKey' isn't defined
 
 Run with verbose output:
 ```bash
-flutter packages pub run flutter_ai_i18n_extractor:main extract --verbose
+flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor extract --verbose
 ```
 
 ## Contributing

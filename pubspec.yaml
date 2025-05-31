@@ -26,4 +26,4 @@ dev_dependencies:
   lints: ^3.0.0
 
 executables:
-  flutter_ai_i18n_extractor:
+  flutter_ai_i18n_extractor: flutter_ai_i18n_extractor
