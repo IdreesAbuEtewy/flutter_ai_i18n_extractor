@@ -6,7 +6,7 @@ An intelligent Flutter package that automatically extracts hardcoded strings fro
 
 - 🔍 **Smart String Detection**: Uses AST parsing to find hardcoded strings in Dart files
 - 🤖 **AI-Powered Key Generation**: Generates meaningful localization keys using AI
-- 🌍 **Professional Translation**: High-quality translations using OpenAI, Google AI, or Anthropic
+- 🌍 **Professional Translation**: High-quality translations using OpenAI, Google AI, Anthropic, DeepSeek, Groq, Cohere, Hugging Face, or Ollama
 - 📝 **ARB File Generation**: Creates and updates ARB files compatible with Flutter's localization
 - 🔄 **Code Replacement**: Automatically replaces hardcoded strings with localization calls
 - 🎯 **Context-Aware**: Analyzes UI context for better key naming and translations
@@ -69,7 +69,7 @@ flutter_ai_i18n_extractor:
   output_class: AppLocalizations  # or 'S' if using flutter_intl
   
   # AI Configuration
-  ai_provider: openai  # openai, google, or anthropic
+  ai_provider: openai  # openai, google, anthropic, deepseek, groq, cohere, huggingface, or ollama
   api_key: ${OPENAI_API_KEY}  # Use environment variables
   model: gpt-4
   
@@ -112,6 +112,21 @@ export GOOGLE_AI_API_KEY="your-api-key-here"
 
 # For Anthropic
 export ANTHROPIC_API_KEY="your-api-key-here"
+
+# For DeepSeek (Free tier available)
+export DEEPSEEK_API_KEY="your-api-key-here"
+
+# For Groq (Free tier available)
+export GROQ_API_KEY="your-api-key-here"
+
+# For Cohere (Free tier available)
+export COHERE_API_KEY="your-api-key-here"
+
+# For Hugging Face (Free tier available)
+export HUGGINGFACE_API_KEY="your-api-key-here"
+
+# For Ollama (Local - no API key needed)
+export OLLAMA_BASE_URL="http://localhost:11434"  # Optional, defaults to localhost
 ```
 
 ### 3. Extract and Translate
@@ -306,6 +321,43 @@ ai_provider: anthropic
 api_key: ${ANTHROPIC_API_KEY}
 model: claude-3-sonnet-20240229
 ```
+
+#### DeepSeek (Free Tier Available)
+```yaml
+ai_provider: deepseek
+api_key: ${DEEPSEEK_API_KEY}
+model: deepseek-chat  # or deepseek-coder
+```
+
+#### Groq (Fast Inference, Free Tier Available)
+```yaml
+ai_provider: groq
+api_key: ${GROQ_API_KEY}
+model: llama3-8b-8192  # or mixtral-8x7b-32768
+```
+
+#### Cohere (Free Tier Available)
+```yaml
+ai_provider: cohere
+api_key: ${COHERE_API_KEY}
+model: command-light  # or command
+```
+
+#### Hugging Face (Free Tier Available)
+```yaml
+ai_provider: huggingface
+api_key: ${HUGGINGFACE_API_KEY}
+model: microsoft/DialoGPT-medium  # or any compatible model
+```
+
+#### Ollama (Local Models, No API Key Required)
+```yaml
+ai_provider: ollama
+api_key: local  # Not required for local Ollama
+model: llama2  # or llama3, mistral, codellama, etc.
+```
+
+> **Note**: For Ollama, make sure you have Ollama installed locally and the desired model downloaded. Visit [ollama.ai](https://ollama.ai) for installation instructions.
 
 ### Key Naming Conventions
 

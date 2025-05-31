@@ -21,6 +21,16 @@ abstract class AiClient {
         return GoogleAiClient(effectiveConfig);
       case 'anthropic':
         return AnthropicAiClient(effectiveConfig);
+      case 'deepseek':
+        return DeepSeekAiClient(effectiveConfig);
+      case 'groq':
+        return GroqAiClient(effectiveConfig);
+      case 'cohere':
+        return CohereAiClient(effectiveConfig);
+      case 'huggingface':
+        return HuggingFaceAiClient(effectiveConfig);
+      case 'ollama':
+        return OllamaAiClient(effectiveConfig);
       default:
         throw UnsupportedError('Unsupported AI provider: ${effectiveConfig.aiProvider}');
     }
@@ -41,6 +51,22 @@ abstract class AiClient {
           break;
         case 'anthropic':
           apiKey = Platform.environment['ANTHROPIC_API_KEY'];
+          break;
+        case 'deepseek':
+          apiKey = Platform.environment['DEEPSEEK_API_KEY'];
+          break;
+        case 'groq':
+          apiKey = Platform.environment['GROQ_API_KEY'];
+          break;
+        case 'cohere':
+          apiKey = Platform.environment['COHERE_API_KEY'];
+          break;
+        case 'huggingface':
+          apiKey = Platform.environment['HUGGINGFACE_API_KEY'];
+          break;
+        case 'ollama':
+          // Ollama typically runs locally without API key
+          apiKey = Platform.environment['OLLAMA_API_KEY'] ?? 'local';
           break;
       }
     }
@@ -258,6 +284,256 @@ class AnthropicAiClient extends AiClient {
     } catch (e) {
       if (e is AiClientException) rethrow;
       throw AiClientException('Failed to communicate with Anthropic: $e');
+    }
+  }
+}
+
+/// DeepSeek AI client implementation
+class DeepSeekAiClient extends AiClient {
+  static const String _baseUrl = 'https://api.deepseek.com/v1';
+  
+  const DeepSeekAiClient(super.config);
+  
+  @override
+  Future<String> sendPrompt(String prompt, {Map<String, dynamic>? options}) async {
+    final url = Uri.parse('$_baseUrl/chat/completions');
+    
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${config.apiKey}',
+    };
+    
+    final body = {
+      'model': config.model.isNotEmpty ? config.model : 'deepseek-chat',
+      'messages': [
+        {
+          'role': 'user',
+          'content': prompt,
+        }
+      ],
+      'max_tokens': options?['max_tokens'] ?? 1000,
+      'temperature': options?['temperature'] ?? 0.3,
+    };
+    
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: json.encode(body),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        final choices = data['choices'] as List;
+        if (choices.isNotEmpty) {
+          final message = choices[0]['message'] as Map<String, dynamic>;
+          return message['content'] as String;
+        }
+      }
+      
+      throw AiClientException(
+        'DeepSeek API request failed: ${response.statusCode} ${response.body}',
+      );
+    } catch (e) {
+      if (e is AiClientException) rethrow;
+      throw AiClientException('Failed to communicate with DeepSeek: $e');
+    }
+  }
+}
+
+/// Groq AI client implementation (fast inference)
+class GroqAiClient extends AiClient {
+  static const String _baseUrl = 'https://api.groq.com/openai/v1';
+  
+  const GroqAiClient(super.config);
+  
+  @override
+  Future<String> sendPrompt(String prompt, {Map<String, dynamic>? options}) async {
+    final url = Uri.parse('$_baseUrl/chat/completions');
+    
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${config.apiKey}',
+    };
+    
+    final body = {
+      'model': config.model.isNotEmpty ? config.model : 'llama3-8b-8192',
+      'messages': [
+        {
+          'role': 'user',
+          'content': prompt,
+        }
+      ],
+      'max_tokens': options?['max_tokens'] ?? 1000,
+      'temperature': options?['temperature'] ?? 0.3,
+    };
+    
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: json.encode(body),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        final choices = data['choices'] as List;
+        if (choices.isNotEmpty) {
+          final message = choices[0]['message'] as Map<String, dynamic>;
+          return message['content'] as String;
+        }
+      }
+      
+      throw AiClientException(
+        'Groq API request failed: ${response.statusCode} ${response.body}',
+      );
+    } catch (e) {
+      if (e is AiClientException) rethrow;
+      throw AiClientException('Failed to communicate with Groq: $e');
+    }
+  }
+}
+
+/// Cohere AI client implementation
+class CohereAiClient extends AiClient {
+  static const String _baseUrl = 'https://api.cohere.ai/v1';
+  
+  const CohereAiClient(super.config);
+  
+  @override
+  Future<String> sendPrompt(String prompt, {Map<String, dynamic>? options}) async {
+    final url = Uri.parse('$_baseUrl/generate');
+    
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${config.apiKey}',
+    };
+    
+    final body = {
+      'model': config.model.isNotEmpty ? config.model : 'command-light',
+      'prompt': prompt,
+      'max_tokens': options?['max_tokens'] ?? 1000,
+      'temperature': options?['temperature'] ?? 0.3,
+    };
+    
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: json.encode(body),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        final generations = data['generations'] as List;
+        if (generations.isNotEmpty) {
+          return generations[0]['text'] as String;
+        }
+      }
+      
+      throw AiClientException(
+        'Cohere API request failed: ${response.statusCode} ${response.body}',
+      );
+    } catch (e) {
+      if (e is AiClientException) rethrow;
+      throw AiClientException('Failed to communicate with Cohere: $e');
+    }
+  }
+}
+
+/// Hugging Face AI client implementation
+class HuggingFaceAiClient extends AiClient {
+  static const String _baseUrl = 'https://api-inference.huggingface.co/models';
+  
+  const HuggingFaceAiClient(super.config);
+  
+  @override
+  Future<String> sendPrompt(String prompt, {Map<String, dynamic>? options}) async {
+    final model = config.model.isNotEmpty ? config.model : 'microsoft/DialoGPT-medium';
+    final url = Uri.parse('$_baseUrl/$model');
+    
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${config.apiKey}',
+    };
+    
+    final body = {
+      'inputs': prompt,
+      'parameters': {
+        'max_length': options?['max_tokens'] ?? 1000,
+        'temperature': options?['temperature'] ?? 0.3,
+      },
+    };
+    
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: json.encode(body),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data is List && data.isNotEmpty) {
+          return data[0]['generated_text'] as String;
+        } else if (data is Map && data.containsKey('generated_text')) {
+          return data['generated_text'] as String;
+        }
+      }
+      
+      throw AiClientException(
+        'Hugging Face API request failed: ${response.statusCode} ${response.body}',
+      );
+    } catch (e) {
+      if (e is AiClientException) rethrow;
+      throw AiClientException('Failed to communicate with Hugging Face: $e');
+    }
+  }
+}
+
+/// Ollama AI client implementation (local models)
+class OllamaAiClient extends AiClient {
+  static const String _defaultBaseUrl = 'http://localhost:11434';
+  
+  const OllamaAiClient(super.config);
+  
+  @override
+  Future<String> sendPrompt(String prompt, {Map<String, dynamic>? options}) async {
+    final baseUrl = Platform.environment['OLLAMA_BASE_URL'] ?? _defaultBaseUrl;
+    final url = Uri.parse('$baseUrl/api/generate');
+    
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    final body = {
+      'model': config.model.isNotEmpty ? config.model : 'llama2',
+      'prompt': prompt,
+      'stream': false,
+      'options': {
+        'temperature': options?['temperature'] ?? 0.3,
+        'num_predict': options?['max_tokens'] ?? 1000,
+      },
+    };
+    
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: json.encode(body),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        return data['response'] as String;
+      }
+      
+      throw AiClientException(
+        'Ollama API request failed: ${response.statusCode} ${response.body}',
+      );
+    } catch (e) {
+      if (e is AiClientException) rethrow;
+      throw AiClientException('Failed to communicate with Ollama: $e');
     }
   }
 }

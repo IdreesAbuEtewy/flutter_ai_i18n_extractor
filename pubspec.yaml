@@ -1,6 +1,6 @@
 name: flutter_ai_i18n_extractor
 description: Automatically detect, extract, and intelligently translate hardcoded text in Flutter projects using AI-powered abbreviation generation and professional translations, fully compatible with Flutter's intl utils system.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/IdreesAbuEtewy/flutter_ai_i18n_extractor
 
 environment:

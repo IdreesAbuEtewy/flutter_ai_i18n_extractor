@@ -208,8 +208,8 @@ class ExtractorConfig {
       throw Exception('Invalid key naming convention. Must be either "camelCase" or "snake_case".');
     }
 
-    if (!['openai', 'google', 'anthropic'].contains(aiProvider)) {
-      throw Exception('Unsupported AI provider: $aiProvider. Supported providers: openai, google, anthropic.');
+    if (!['openai', 'google', 'anthropic', 'deepseek', 'groq', 'cohere', 'huggingface', 'ollama'].contains(aiProvider)) {
+      throw Exception('Unsupported AI provider: $aiProvider. Supported providers: openai, google, anthropic, deepseek, groq, cohere, huggingface, ollama.');
     }
   }
 

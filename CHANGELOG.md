@@ -1,6 +1,30 @@
 # Changelog
 
 
+## [Unreleased]
+
+### Added
+- Support for DeepSeek AI provider with free tier availability
+- Support for Groq AI provider with fast inference and free tier
+- Support for Cohere AI provider with free tier availability
+- Support for Hugging Face AI provider with free tier availability
+- Support for Ollama local AI models (no API key required)
+- Environment variable support for all new AI providers
+- Updated documentation with configuration examples for all providers
+
+### Fixed
+- Fixed `displayName` getter issue in `ExtractedString` class
+- Resolved compilation errors and warnings
+- Fixed unnecessary null comparisons in `ai_client.dart`
+- Corrected import statements and dependencies
+- Fixed `assignment_to_final` errors by using `copyWith` method for context assignments
+
+### Improved
+- Enhanced error handling and validation
+- Better code organization and structure
+- Improved performance and reliability
+- Expanded AI provider ecosystem with free and local options
+
 ## [1.0.0] - 2025-5-31
 
 ### Added
