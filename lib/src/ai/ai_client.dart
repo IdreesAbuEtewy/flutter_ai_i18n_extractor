@@ -15,6 +15,21 @@ abstract class AiClient {
     final effectiveConfig = _getConfigWithApiKey(config);
     
     switch (effectiveConfig.aiProvider.toLowerCase()) {
+      // Free Translation Services (Default)
+      case 'google_translate':
+        return GoogleTranslateClient(effectiveConfig);
+      case 'google_translate_2':
+        return GoogleTranslate2Client(effectiveConfig);
+      case 'bing_translate':
+        return BingTranslateClient(effectiveConfig);
+      case 'libre_translate':
+        return LibreTranslateClient(effectiveConfig);
+      case 'argos_translate':
+        return ArgosTranslateClient(effectiveConfig);
+      case 'deepl_translate':
+        return DeepLTranslateClient(effectiveConfig);
+      
+      // AI Models (Paid/API Key Required)
       case 'openai':
         return OpenAiClient(effectiveConfig);
       case 'google':
@@ -43,6 +58,19 @@ abstract class AiClient {
     // If API key is not provided or is a placeholder, try to get from environment
     if (apiKey.isEmpty || apiKey.startsWith(r'${')) {
       switch (config.aiProvider.toLowerCase()) {
+        // Free translation services (no API key required)
+        case 'google_translate':
+        case 'google_translate_2':
+        case 'bing_translate':
+        case 'libre_translate':
+        case 'argos_translate':
+          apiKey = 'free';
+          break;
+        case 'deepl_translate':
+          apiKey = Platform.environment['DEEPL_API_KEY'];
+          break;
+        
+        // AI Models (API key required)
         case 'openai':
           apiKey = Platform.environment['OPENAI_API_KEY'];
           break;
@@ -534,6 +562,252 @@ class OllamaAiClient extends AiClient {
     } catch (e) {
       if (e is AiClientException) rethrow;
       throw AiClientException('Failed to communicate with Ollama: $e');
+    }
+  }
+}
+
+/// Google Translate client implementation (Free)
+class GoogleTranslateClient extends AiClient {
+  const GoogleTranslateClient(super.config);
+  
+  @override
+  Future<String> sendPrompt(String prompt, {Map<String, dynamic>? options}) async {
+    // Extract text and target language from prompt
+    final translation = await _translateText(prompt, options?['target_language'] ?? 'en');
+    return translation;
+  }
+  
+  Future<String> _translateText(String text, String targetLang) async {
+    final url = Uri.parse('https://translate.googleapis.com/translate_a/single')
+        .replace(queryParameters: {
+      'client': 'gtx',
+      'sl': 'auto',
+      'tl': targetLang,
+      'dt': 't',
+      'q': text,
+    });
+    
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data is List && data.isNotEmpty && data[0] is List) {
+          return data[0][0][0] as String;
+        }
+      }
+      throw AiClientException('Google Translate request failed: ${response.statusCode}');
+    } catch (e) {
+      if (e is AiClientException) rethrow;
+      throw AiClientException('Failed to communicate with Google Translate: $e');
+    }
+  }
+}
+
+/// Google Translate 2 client implementation (Free, alternative endpoint)
+class GoogleTranslate2Client extends AiClient {
+  const GoogleTranslate2Client(super.config);
+  
+  @override
+  Future<String> sendPrompt(String prompt, {Map<String, dynamic>? options}) async {
+    final translation = await _translateText(prompt, options?['target_language'] ?? 'en');
+    return translation;
+  }
+  
+  Future<String> _translateText(String text, String targetLang) async {
+    final url = Uri.parse('https://clients5.google.com/translate_a/t')
+        .replace(queryParameters: {
+      'client': 'dict-chrome-ex',
+      'sl': 'auto',
+      'tl': targetLang,
+      'q': text,
+    });
+    
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data is List && data.isNotEmpty) {
+          return data[0] as String;
+        }
+      }
+      throw AiClientException('Google Translate 2 request failed: ${response.statusCode}');
+    } catch (e) {
+      if (e is AiClientException) rethrow;
+      throw AiClientException('Failed to communicate with Google Translate 2: $e');
+    }
+  }
+}
+
+/// Microsoft Bing Translate client implementation (Free)
+class BingTranslateClient extends AiClient {
+  const BingTranslateClient(super.config);
+  
+  @override
+  Future<String> sendPrompt(String prompt, {Map<String, dynamic>? options}) async {
+    final translation = await _translateText(prompt, options?['target_language'] ?? 'en');
+    return translation;
+  }
+  
+  Future<String> _translateText(String text, String targetLang) async {
+    final url = Uri.parse('https://www.bing.com/ttranslatev3')
+        .replace(queryParameters: {
+      'fromLang': 'auto-detect',
+      'to': targetLang,
+      'text': text,
+    });
+    
+    final headers = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    };
+    
+    try {
+      final response = await http.get(url, headers: headers);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data is List && data.isNotEmpty && data[0]['translations'] is List) {
+          return data[0]['translations'][0]['text'] as String;
+        }
+      }
+      throw AiClientException('Bing Translate request failed: ${response.statusCode}');
+    } catch (e) {
+      if (e is AiClientException) rethrow;
+      throw AiClientException('Failed to communicate with Bing Translate: $e');
+    }
+  }
+}
+
+/// LibreTranslate client implementation (Free)
+class LibreTranslateClient extends AiClient {
+  const LibreTranslateClient(super.config);
+  
+  @override
+  Future<String> sendPrompt(String prompt, {Map<String, dynamic>? options}) async {
+    final translation = await _translateText(prompt, options?['target_language'] ?? 'en');
+    return translation;
+  }
+  
+  Future<String> _translateText(String text, String targetLang) async {
+    final baseUrl = Platform.environment['LIBRETRANSLATE_URL'] ?? 'https://libretranslate.de';
+    final url = Uri.parse('$baseUrl/translate');
+    
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    final body = {
+      'q': text,
+      'source': 'auto',
+      'target': targetLang,
+      'format': 'text',
+    };
+    
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: json.encode(body),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        return data['translatedText'] as String;
+      }
+      
+      throw AiClientException('LibreTranslate request failed: ${response.statusCode}');
+    } catch (e) {
+      if (e is AiClientException) rethrow;
+      throw AiClientException('Failed to communicate with LibreTranslate: $e');
+    }
+  }
+}
+
+/// Argos Translate client implementation (Free, local)
+class ArgosTranslateClient extends AiClient {
+  const ArgosTranslateClient(super.config);
+  
+  @override
+  Future<String> sendPrompt(String prompt, {Map<String, dynamic>? options}) async {
+    final translation = await _translateText(prompt, options?['target_language'] ?? 'en');
+    return translation;
+  }
+  
+  Future<String> _translateText(String text, String targetLang) async {
+    final baseUrl = Platform.environment['ARGOS_TRANSLATE_URL'] ?? 'http://localhost:5000';
+    final url = Uri.parse('$baseUrl/translate');
+    
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    final body = {
+      'q': text,
+      'source': 'auto',
+      'target': targetLang,
+    };
+    
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: json.encode(body),
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        return data['translatedText'] as String;
+      }
+      
+      throw AiClientException('Argos Translate request failed: ${response.statusCode}');
+    } catch (e) {
+      if (e is AiClientException) rethrow;
+      throw AiClientException('Failed to communicate with Argos Translate: $e');
+    }
+  }
+}
+
+/// DeepL Translate client implementation (API Key Required)
+class DeepLTranslateClient extends AiClient {
+  const DeepLTranslateClient(super.config);
+  
+  @override
+  Future<String> sendPrompt(String prompt, {Map<String, dynamic>? options}) async {
+    final translation = await _translateText(prompt, options?['target_language'] ?? 'en');
+    return translation;
+  }
+  
+  Future<String> _translateText(String text, String targetLang) async {
+    final baseUrl = Platform.environment['DEEPL_API_URL'] ?? 'https://api-free.deepl.com';
+    final url = Uri.parse('$baseUrl/v2/translate');
+    
+    final headers = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': 'DeepL-Auth-Key ${config.apiKey}',
+    };
+    
+    final body = {
+      'text': text,
+      'target_lang': targetLang.toUpperCase(),
+    };
+    
+    try {
+      final response = await http.post(
+        url,
+        headers: headers,
+        body: body,
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        final translations = data['translations'] as List;
+        if (translations.isNotEmpty) {
+          return translations[0]['text'] as String;
+        }
+      }
+      
+      throw AiClientException('DeepL Translate request failed: ${response.statusCode}');
+    } catch (e) {
+      if (e is AiClientException) rethrow;
+      throw AiClientException('Failed to communicate with DeepL Translate: $e');
     }
   }
 }

@@ -208,8 +208,15 @@ class ExtractorConfig {
       throw Exception('Invalid key naming convention. Must be either "camelCase" or "snake_case".');
     }
 
-    if (!['openai', 'google', 'anthropic', 'deepseek', 'groq', 'cohere', 'huggingface', 'ollama'].contains(aiProvider)) {
-      throw Exception('Unsupported AI provider: $aiProvider. Supported providers: openai, google, anthropic, deepseek, groq, cohere, huggingface, ollama.');
+    if (![
+      // AI Models (require API keys)
+      'openai', 'google', 'anthropic', 'deepseek', 'groq', 'cohere', 'huggingface', 'ollama',
+      // Free Translation Services
+      'google_translate', 'google_translate_2', 'bing_translate', 'libre_translate', 'argos_translate',
+      // Translation Services (require API keys)
+      'deepl_translate'
+    ].contains(aiProvider)) {
+      throw Exception('Unsupported AI provider: $aiProvider. Supported providers: openai, google, anthropic, deepseek, groq, cohere, huggingface, ollama, google_translate, google_translate_2, bing_translate, libre_translate, argos_translate, deepl_translate.');
     }
   }
 

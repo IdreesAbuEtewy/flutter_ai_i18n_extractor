@@ -4,13 +4,35 @@ An intelligent Flutter package that automatically extracts hardcoded strings fro
 
 ## Features
 
-- 🔍 **Smart String Detection**: Uses AST parsing to find hardcoded strings in Dart files
-- 🤖 **AI-Powered Key Generation**: Generates meaningful localization keys using AI
-- 🌍 **Professional Translation**: High-quality translations using OpenAI, Google AI, Anthropic, DeepSeek, Groq, Cohere, Hugging Face, or Ollama
-- 📝 **ARB File Generation**: Creates and updates ARB files compatible with Flutter's localization
-- 🔄 **Code Replacement**: Automatically replaces hardcoded strings with localization calls
-- 🎯 **Context-Aware**: Analyzes UI context for better key naming and translations
-- ✅ **flutter_intl Compatible**: Works seamlessly with existing `flutter_intl` and `intl_utils` setups
+- **Professional Translation**: Leverage AI models and translation services for high-quality translations
+- **Multiple Translation Options**: Choose from free translation services or premium AI models
+- **Compatibility with `flutter_intl`**: Seamlessly integrates with existing `flutter_intl` projects
+- **Smart Key Generation**: Automatically generates meaningful keys for your translations
+- **Batch Processing**: Extract and translate multiple strings efficiently
+- **Customizable**: Configure translation providers, target languages, and extraction patterns
+- **CLI Support**: Easy-to-use command-line interface
+
+### Translation Providers
+
+| Translation Module | Support | FREE |
+|-------------------|---------|------|
+| Google Translate | ✅ | ✅ FREE |
+| Google Translate 2 | ✅ | ✅ FREE |
+| Microsoft Bing Translate | ✅ | ✅ FREE |
+| Libre Translate | ✅ | ✅ FREE |
+| Argos Translate | ✅ | ✅ FREE |
+| DeepL Translate | ✅ | require API KEY (DEEPL_API_KEY as env)<br/>optional API URL (DEEPL_API_URL as env) |
+| gpt-4o | ✅ | require API KEY (OPENAI_API_KEY as env) |
+| gpt-3.5-turbo | ✅ | require API KEY (OPENAI_API_KEY as env) |
+| gpt-4 | ✅ | require API KEY (OPENAI_API_KEY as env) |
+| gpt-4o-mini | ✅ | require API KEY (OPENAI_API_KEY as env) |
+| Claude 3.5 Sonnet | ✅ | require API KEY (ANTHROPIC_API_KEY as env) |
+| Gemini Pro | ✅ | require API KEY (GOOGLE_AI_API_KEY as env) |
+| DeepSeek | ✅ | require API KEY (DEEPSEEK_API_KEY as env) |
+| Groq | ✅ | require API KEY (GROQ_API_KEY as env) |
+| Cohere | ✅ | require API KEY (COHERE_API_KEY as env) |
+| Hugging Face | ✅ | require API KEY (HUGGINGFACE_API_KEY as env) |
+| Ollama | ✅ | require local installation |
 
 ## Compatibility with flutter_intl
 
@@ -69,7 +91,10 @@ flutter_ai_i18n_extractor:
   output_class: AppLocalizations  # or 'S' if using flutter_intl
   
   # AI Configuration
-  ai_provider: openai  # openai, google, anthropic, deepseek, groq, cohere, huggingface, or ollama
+  ai_provider: google_translate # Default: google_translate (free). Choose from:
+  # Free Translation Services: google_translate, google_translate_2, bing_translate, libre_translate, argos_translate
+  # Translation with API Key: deepl_translate
+  # AI Models with API Key: openai, google, anthropic, deepseek, groq, cohere, huggingface, ollama
   api_key: ${OPENAI_API_KEY}  # Use environment variables
   model: gpt-4
   
@@ -101,9 +126,22 @@ flutter_ai_i18n_extractor:
 
 ### 2. Set Up API Key
 
-Set your AI provider API key as an environment variable:
+Set up your API keys as environment variables (only required for paid services):
 
 ```bash
+# Free Translation Services (No API Key Required)
+# - google_translate
+# - google_translate_2  
+# - bing_translate
+# - libre_translate
+# - argos_translate
+
+# Translation Services (API Key Required)
+# For DeepL Translate
+export DEEPL_API_KEY="your-deepl-api-key"
+export DEEPL_API_URL="https://api-free.deepl.com"  # Optional, defaults to free tier
+
+# AI Models (API Key Required)
 # For OpenAI
 export OPENAI_API_KEY="your-api-key-here"
 
@@ -127,6 +165,10 @@ export HUGGINGFACE_API_KEY="your-api-key-here"
 
 # For Ollama (Local - no API key needed)
 export OLLAMA_BASE_URL="http://localhost:11434"  # Optional, defaults to localhost
+
+# Optional: Custom URLs for self-hosted services
+export LIBRETRANSLATE_URL="https://libretranslate.de"  # Default LibreTranslate instance
+export ARGOS_TRANSLATE_URL="http://localhost:5000"     # Local Argos Translate instance
 ```
 
 ### 3. Extract and Translate
@@ -299,65 +341,109 @@ Shows statistics about your localization coverage.
 
 ## Configuration Options
 
-### AI Providers
+### Translation Providers
 
-#### OpenAI
+#### Free Translation Services (No API Key Required)
+
+##### Google Translate (Default)
+```yaml
+ai_provider: google_translate
+# No API key required - completely free
+```
+
+##### Google Translate 2 (Alternative Endpoint)
+```yaml
+ai_provider: google_translate_2
+# No API key required - completely free
+```
+
+##### Microsoft Bing Translate
+```yaml
+ai_provider: bing_translate
+# No API key required - completely free
+```
+
+##### LibreTranslate
+```yaml
+ai_provider: libre_translate
+# No API key required - uses public instance
+# Optional: Set LIBRETRANSLATE_URL for custom instance
+```
+
+##### Argos Translate
+```yaml
+ai_provider: argos_translate
+# No API key required - requires local installation
+# Optional: Set ARGOS_TRANSLATE_URL for custom instance
+```
+
+#### Translation Services (API Key Required)
+
+##### DeepL Translate
+```yaml
+ai_provider: deepl_translate
+api_key: ${DEEPL_API_KEY}
+# Optional: Set DEEPL_API_URL for custom endpoint
+```
+
+#### AI Models (API Key Required)
+
+##### OpenAI
 ```yaml
 ai_provider: openai
 api_key: ${OPENAI_API_KEY}
-model: gpt-4  # or gpt-3.5-turbo
+model: gpt-4o  # or gpt-4, gpt-3.5-turbo, gpt-4o-mini
 ```
 
-#### Google AI
+##### Google AI
 ```yaml
 ai_provider: google
 api_key: ${GOOGLE_AI_API_KEY}
-model: gemini-pro
+model: gemini-1.5-pro  # or gemini-1.5-flash
 ```
 
-#### Anthropic
+##### Anthropic
 ```yaml
 ai_provider: anthropic
 api_key: ${ANTHROPIC_API_KEY}
-model: claude-3-sonnet-20240229
+model: claude-3-5-sonnet-20241022  # or claude-3-haiku-20240307
 ```
 
-#### DeepSeek (Free Tier Available)
+##### DeepSeek
 ```yaml
 ai_provider: deepseek
 api_key: ${DEEPSEEK_API_KEY}
 model: deepseek-chat  # or deepseek-coder
 ```
 
-#### Groq (Fast Inference, Free Tier Available)
+##### Groq
 ```yaml
 ai_provider: groq
 api_key: ${GROQ_API_KEY}
-model: llama3-8b-8192  # or mixtral-8x7b-32768
+model: llama-3.1-70b-versatile  # or mixtral-8x7b-32768
 ```
 
-#### Cohere (Free Tier Available)
+##### Cohere
 ```yaml
 ai_provider: cohere
 api_key: ${COHERE_API_KEY}
-model: command-light  # or command
+model: command-r-plus  # or command-r
 ```
 
-#### Hugging Face (Free Tier Available)
+##### Hugging Face
 ```yaml
 ai_provider: huggingface
 api_key: ${HUGGINGFACE_API_KEY}
-model: microsoft/DialoGPT-medium  # or any compatible model
+model: microsoft/DialoGPT-large  # or any compatible model
 ```
 
-#### Ollama (Local Models, No API Key Required)
+##### Ollama
 ```yaml
 ai_provider: ollama
-api_key: local  # Not required for local Ollama
-model: llama2  # or llama3, mistral, codellama, etc.
+model: llama3.1  # or any locally installed model
 ```
 
-> **Note**: For Ollama, make sure you have Ollama installed locally and the desired model downloaded. Visit [ollama.ai](https://ollama.ai) for installation instructions.
+> **Note**: Ollama requires local installation. Download models using `ollama pull <model-name>`.
 
 ### Key Naming Conventions
 
