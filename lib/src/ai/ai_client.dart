@@ -332,7 +332,7 @@ class DeepSeekAiClient extends AiClient {
     };
     
     final body = {
-      'model': config.model.isNotEmpty ? config.model : 'deepseek-chat',
+      'model': config.model.isNotEmpty ? config.model : 'deepseek-r1',
       'messages': [
         {
           'role': 'user',

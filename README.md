@@ -177,6 +177,9 @@ export ARGOS_TRANSLATE_URL="http://localhost:5000"     # Local Argos Translate i
 # Extract strings and generate translations
 flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor extract
 
+# Preview extracted strings and select which ones to process
+flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor extract --preview
+
 # Or run in dry-run mode first to see what would be extracted
 flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor extract --dry-run
 ```
@@ -317,6 +320,7 @@ flutter packages pub run flutter_ai_i18n_extractor:flutter_ai_i18n_extractor ext
 ```
 
 Options:
+- `--preview, -p`: Show extracted strings and allow selection before processing
 - `--dry-run`: Preview changes without modifying files
 - `--config`: Specify custom config file path
 - `--languages`: Override target languages (comma-separated)

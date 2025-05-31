@@ -139,9 +139,12 @@ class ExtractorConfig {
       languages: (config['languages'] as List?)?.cast<String>() ?? ['ar', 'es', 'fr', 'de', 'zh'],
       scanPaths: (config['scan_paths'] as List?)?.cast<String>() ?? ['lib/'],
       excludePatterns: (config['exclude_patterns'] as List?)?.cast<String>() ?? [
+        'lib/generated/',
+        '**/generated/',
         '**/*.g.dart',
         '**/*.freezed.dart',
-        '**/generated/**',
+        '**/test/**',
+        'lib/l10n/',
       ],
       keyNamingConvention: config['key_naming_convention'] as String? ?? 'camelCase',
       maxKeyLength: config['max_key_length'] as int? ?? 35,

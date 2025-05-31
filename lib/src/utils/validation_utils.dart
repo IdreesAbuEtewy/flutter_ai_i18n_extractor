@@ -184,6 +184,13 @@ class ValidationUtils {
   
   /// Checks if a string looks like a technical identifier
   static bool _isTechnicalIdentifier(String value) {
+    final trimmedValue = value.trim();
+    
+    // Check for DateFormat patterns (should not be localized)
+    if (_isDateFormatPattern(trimmedValue)) {
+      return true;
+    }
+    
     // Check for common technical patterns
     final patterns = [
       RegExp(r'^[A-Z_][A-Z0-9_]*$'), // CONSTANT_CASE
@@ -196,7 +203,35 @@ class ValidationUtils {
       RegExp(r'^\w+://'), // Other protocols
     ];
     
-    return patterns.any((pattern) => pattern.hasMatch(value.trim()));
+    return patterns.any((pattern) => pattern.hasMatch(trimmedValue));
+  }
+  
+  /// Checks if a string is a DateFormat pattern
+  static bool _isDateFormatPattern(String value) {
+    // Common DateFormat patterns that should not be localized
+    final dateFormatPatterns = [
+      RegExp(r'^[yMdHmsaEDFwWkKhz\s/\-:.,]+$'), // General date format characters
+      RegExp(r'^(y{1,4}|M{1,4}|d{1,2}|H{1,2}|m{1,2}|s{1,2}|a|E{1,4}|D{1,3}|F|w{1,2}|W|k{1,2}|K{1,2}|h{1,2}|z{1,4})[\s/\-:.,]*(y{1,4}|M{1,4}|d{1,2}|H{1,2}|m{1,2}|s{1,2}|a|E{1,4}|D{1,3}|F|w{1,2}|W|k{1,2}|K{1,2}|h{1,2}|z{1,4})*$'),
+      // Specific common patterns
+      RegExp(r'^MMM\s*d$'), // "MMM d"
+      RegExp(r'^MMM\s*dd$'), // "MMM dd"
+      RegExp(r'^MMMM\s*d$'), // "MMMM d"
+      RegExp(r'^MMMM\s*dd$'), // "MMMM dd"
+      RegExp(r'^dd/MM/yyyy$'), // "dd/MM/yyyy"
+      RegExp(r'^MM/dd/yyyy$'), // "MM/dd/yyyy"
+      RegExp(r'^yyyy-MM-dd$'), // "yyyy-MM-dd"
+      RegExp(r'^dd-MM-yyyy$'), // "dd-MM-yyyy"
+      RegExp(r'^HH:mm$'), // "HH:mm"
+      RegExp(r'^HH:mm:ss$'), // "HH:mm:ss"
+      RegExp(r'^h:mm\s*a$'), // "h:mm a"
+      RegExp(r'^EEEE$'), // "EEEE" (day of week)
+      RegExp(r'^EEE$'), // "EEE" (short day of week)
+      RegExp(r'^MMM$'), // "MMM" (short month)
+      RegExp(r'^MMMM$'), // "MMMM" (full month)
+      RegExp(r'^yyyy$'), // "yyyy" (year)
+    ];
+    
+    return dateFormatPatterns.any((pattern) => pattern.hasMatch(value));
   }
   
   /// Extracts placeholders from a string
